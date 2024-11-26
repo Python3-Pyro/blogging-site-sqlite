@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Lato"
+    />
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <section class="login-page">
+      <div class="navbar-brand">
+        <img
+          src="\static\ficticious-logo.png"
+          alt="Ficticious-logo"
+          class="logo"
+        />
+        <h1 class="company-title">FICTICIOUS ORG</h1>
+      </div>
+      <div>
+        <h2 id="login-text">Login</h2>
+      </div>
+      <div class="test">
+        <form class="login-form" method="POST">
+          <label
+            >Email
+            <input type="email" name="email" required />
+          </label>
+          <label
+            >Password
+            <input type="password" name="password" required />
+          </label>
+          <input
+            id="login-button"
+            class="form-submit"
+            type="submit"
+            value="Login"
+          />
+        </form>
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %}
+        <ul id="login-option">
+          {% with category, message = messages[-1] %}
+          <li class="{{ category }}">
+            {{ message }}. First time user?
+            <a href="{{ url_for('signup') }}">Sign up</a>
+          </li>
+          {% endwith %}
+        </ul>
+        {% endif %} {% endwith %}
+      </div>
+    </section>
+  </body>
+</html>

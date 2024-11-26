@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Lato"
+    />
+    <title>Signup</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <section class="signup-page">
+      <div class="navbar-brand">
+        <img
+          src="\static\ficticious-logo.png"
+          alt="Ficticious-logo"
+          class="logo"
+        />
+        <h1 class="company-title">FICTICIOUS ORG</h1>
+      </div>
+      <div>
+        <h2 id="signup-text">Sign Up</h2>
+      </div>
+      <div class="test">
+        <form class="signup-form" method="POST">
+          <label>
+            E-mail
+            <input type="email" name="email" />
+          </label>
+          <label>
+            Password
+            <input type="password" name="password" />
+          </label>
+          <input
+            id="signup-button"
+            class="form-submit"
+            type="submit"
+            value="Sign up"
+          />
+        </form>
+        <p id="login-option">
+          <a href="{{ url_for('login') }}">Log in</a> instead
+        </p>
+      </div>
+    </section>
+  </body>
+</html>

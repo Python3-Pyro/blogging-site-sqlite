@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Lato"
+    />
+    <title>Post Details</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body class="body">
+    <header>
+      <div class="user-welcome">
+        <p>Welcome, {{ user_email }}!</p>
+        <p>Active Session</p>
+
+        <div class="url">
+          <!-- Home Button -->
+          <form class="home-box" action="{{ url_for('home') }}" method="POST">
+            <button class="logout" type="submit">Home</button>
+          </form>
+
+          <!-- Logout Button -->
+          <form
+            class="logout-box"
+            action="{{ url_for('logout') }}"
+            method="POST"
+          >
+            <button class="logout" type="submit">Logout</button>
+          </form>
+        </div>
+      </div>
+      <div class="navbar">
+        <div class="navbar-brand">
+          <img
+            src="\static\ficticious-logo.png"
+            alt="Ficticious-logo"
+            class="logo"
+          />
+          <h1 class="company-title">FICTICIOUS ORG</h1>
+        </div>
+        <ul class="navbar-navigation">
+          <li class="navbar-navigation-items">
+            <a
+              href="https://en.wikipedia.org/wiki/Technical_support"
+              class="navbar-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Wikipedia</a
+            >
+          </li>
+          <li class="navbar-navigation-items">
+            <a
+              href="https://www.timeanddate.com/calendar/"
+              class="navbar-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Learning Calendar</a
+            >
+          </li>
+        </ul>
+      </div>
+    </header>
+    <section class="signup-page">
+      <div class="post-history">
+        <h3>Post Title: {{ title }}</h3>
+        <h3>Author: {{ email }}</h3>
+        <h3>Posted Date: {{ date }}</h3>
+        <p id="post-content">{{ content }}</p>
+      </div>
+      <button
+        type="edit"
+        class="edit"
+        onclick="document.getElementById('generate_content').value='true'; this.form.submit();"
+      >
+        Edit
+      </button>
+    </section>
+  </body>
+</html>
