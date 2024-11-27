@@ -10,15 +10,12 @@ from flask import (
     flash,
     redirect,
     url_for,
-)
-    
-# import mysql.connector
-# from mysql.connector import Error
+)    
 
-# import sqlite3
 import psycopg2
 from psycopg2 import sql
 from psycopg2.extras import RealDictCursor
+import bcrypt
 
 from dotenv import load_dotenv
 
@@ -29,10 +26,9 @@ def create_app():
     app.secret_key = os.environ.get("FLASK_SECRET_KEY", "default_secret_key")
     openai.api_key = os.getenv("OPENAI_API_KEY")
 
-    DB_PATH = "blog_app.db"
+    # DB_PATH = "blog_app.db"
 
-    def get_db_connection():
-        # return sqlite3.connect(DB_PATH)
+    def get_db_connection():        
         return psycopg2.connect(
             host=os.getenv("POSTGRES_HOST"),
             database=os.getenv("POSTGRES_DB"),
@@ -41,30 +37,10 @@ def create_app():
         )
 
     # Insert a new blog entry into the database
-    def insert_entry(title, content, email):
-        # connection = None  # Initialize connection to None
-        # cursor = None      # Initialize cursor to None
-        try:
-            # Connect to the database
-            # connection = mysql.connector.connect(
-            #     host=os.environ.get("MYSQL_HOST", "localhost"),  # Use environment variable for host
-            #     user=os.environ.get("MYSQL_USER", "codebind"),  # Use environment variable for user
-            #     password=os.environ.get("MYSQL_PASSWORD"),  # Use environment variable for password
-            #     database=os.environ.get("MYSQL_DATABASE", "ficticiousblogs")
-            # )
+    def insert_entry(title, content, email):        
+        try:            
             connection = get_db_connection()
-            cursor = connection.cursor()
-            
-            # Create the table in SQLite
-            # cursor.execute("""
-            #     CREATE TABLE IF NOT EXISTS entries (
-            #         id INTEGER PRIMARY KEY,
-            #         title TEXT NOT NULL,
-            #         content TEXT NOT NULL,
-            #         date DATETIME,
-            #         email TEXT
-            #     )
-            #     """)
+            cursor = connection.cursor()            
             
             # Create a table in Postgresql
             cursor.execute("""
@@ -75,13 +51,8 @@ def create_app():
                     date TIMESTAMP DEFAULT NOW(),
                     email TEXT
                 )
-                """)
+                """)            
             
-            # SQL query to insert data for Sqlite
-            # sql_insert_query = """
-            # INSERT INTO entries (title, content, email, date)
-            # VALUES (%s, %s, %s, DATETIME('now'))
-            # """
             # SQL query to insert data for Postgresql
             sql_insert_query = """
             INSERT INTO entries (title, content, email)
@@ -93,30 +64,18 @@ def create_app():
             cursor.execute(sql_insert_query, entry_data)
             connection.commit()
             print("Entry inserted successfully.")
-
-        # except sqlite3.Error as e:
-        #     print("Error while connecting to SQLite:", e)
-        
+                
         except Exception as e:
             print("Error while interacting with PostgreSQL:", e)
 
         finally:
             connection.close()
-            print("SQLite connection is closed")
+            print("Postgresql connection is closed")
         
     # Fetch all blog entries from the database
     def fetch_entries():
-        entries = []
-        # connection = None  # Initialize connection to None
-        # cursor = None      # Initialize cursor to None
-        try:
-            # Connect to the MySQL database
-            # connection = mysql.connector.connect(
-            #     host=os.environ.get("MYSQL_HOST", "localhost"),  # Use environment variable for host
-            #     user=os.environ.get("MYSQL_USER", "codebind"),  # Use environment variable for user
-            #     password=os.environ.get("MYSQL_PASSWORD"),  # Use environment variable for password
-            #     database=os.environ.get("MYSQL_DATABASE", "ficticiousblogs")
-            # )
+        entries = []        
+        try:            
             connection = get_db_connection()
             cursor = connection.cursor()        
 
@@ -127,42 +86,21 @@ def create_app():
             # Fetch all rows from the result
             entries = cursor.fetchall()
             return entries
-
-        # except sqlite3.Error as e:
-        #     print("Error while connecting to SQLite:", e)
-        
+                
         except Exception as e:
             print("Error while interacting with PostgreSQL:", e)
             return []
 
         finally:
             connection.close()
-            print("SQLite connection is closed")
-        # return entries
+            print("Postgresql connection is closed")        
 
     # Insert a new user into the users table
-    def insert_user(email, password):
-        # connection = None  # Initialize connection to None
-        # cursor = None      # Initialize cursor to None
-        try:
-            # Connect to the database
-            # connection = mysql.connector.connect(
-            #     host=os.environ.get("MYSQL_HOST", "localhost"),  # Use environment variable for host
-            #     user=os.environ.get("MYSQL_USER", "codebind"),  # Use environment variable for user
-            #     password=os.environ.get("MYSQL_PASSWORD"),  # Use environment variable for password
-            #     database=os.environ.get("MYSQL_DATABASE", "ficticiousblogs")
-            # )
+    def insert_user(email, password):        
+        try:            
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
             connection = get_db_connection()
-            cursor = connection.cursor()
-            
-            # Create the table in SQLite
-            # cursor.execute("""
-            #     CREATE TABLE IF NOT EXISTS users (
-            #         id INTEGER PRIMARY KEY,
-            #         email TEXT NOT NULL,
-            #         password TEXT NOT NULL
-            #     )
-            #     """)
+            cursor = connection.cursor()            
             
             # Create table in Postgresql
             cursor.execute("""
@@ -178,35 +116,23 @@ def create_app():
             INSERT INTO users (email, password)
             VALUES (%s, %s)
             """
-            user_data = (email, password)
+            user_data = (email, hashed_password.decode('utf-8'))
 
             # Execute the query
             cursor.execute(sql_insert_query, user_data)
             connection.commit()
             print("User inserted successfully.")
-
-        # except sqlite3.Error as e:
-        #     print("Error while connecting to SQLite:", e)
-        
+                
         except Exception as e:
             print("Error while interacting with PostgreSQL:", e)
 
         finally:
             connection.close()
-            print("SQLite connection is closed")
+            print("Postgresql connection is closed")
 
     # Check if an email is already registered
-    def is_email_registered(email):
-        # connection = None  # Initialize connection to None
-        # cursor = None      # Initialize cursor to None
-        try:
-            # Connect to the database
-            # connection = mysql.connector.connect(
-            #     host=os.environ.get("MYSQL_HOST", "localhost"),  # Use environment variable for host
-            #     user=os.environ.get("MYSQL_USER", "codebind"),  # Use environment variable for user
-            #     password=os.environ.get("MYSQL_PASSWORD"),  # Use environment variable for password
-            #     database=os.environ.get("MYSQL_DATABASE", "ficticiousblogs")
-            # )
+    def is_email_registered(email):        
+        try:            
             connection = get_db_connection()
             cursor = connection.cursor()
                         
@@ -217,11 +143,7 @@ def create_app():
             # Fetch the result
             result = cursor.fetchone()
             return result[0] > 0  # True if email exists, False otherwise
-
-        # except sqlite3.Error as e:
-        #     print("Error while connecting to SQLite:", e)
-        #     return False  # Assume email doesn't exist if there's an error
-        
+                
         except Exception as e:
             print("Error while interacting with PostgreSQL:", e)
             return False
@@ -231,17 +153,8 @@ def create_app():
             connection.close()
                 
     # Validate user login credential
-    def validate_user(email, password):
-        # connection = None  # Initialize connection to None
-        # cursor = None      # Initialize cursor to None
-        try:
-            # Connect to the database
-            # connection = mysql.connector.connect(
-            #     host=os.environ.get("MYSQL_HOST", "localhost"),  # Use environment variable for host
-            #     user=os.environ.get("MYSQL_USER", "codebind"),  # Use environment variable for user
-            #     password=os.environ.get("MYSQL_PASSWORD"),  # Use environment variable for password
-            #     database=os.environ.get("MYSQL_DATABASE", "ficticiousblogs")
-            # )
+    def validate_user(email, password):        
+        try:            
             connection = get_db_connection()
             cursor = connection.cursor()       
                         
@@ -251,12 +164,10 @@ def create_app():
             
             # Fetch the stored password if the email exists
             result = cursor.fetchone()
-            return result and result[0] == password
-
-        # except sqlite3.Error as e:
-        #     print("Error while connecting to SQLite:", e)
-        #     return False  # Assume login fails if there's an error
-        
+            if result:
+                stored_hashed_password = result[0]
+                return bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password.encode('utf-8'))
+                
         except Exception as e:
             print("Error while interacting with PostgreSQL:", e)
             return False
@@ -265,17 +176,8 @@ def create_app():
             connection.close()
 
     # Display a detailed post
-    def get_post_by_id(post_id):
-        # connection = None  # Initialize connection to None
-        # cursor = None      # Initialize cursor to None
-        try:
-            # Connect to the MySQL database
-            # connection = mysql.connector.connect(
-            #     host=os.environ.get("MYSQL_HOST", "localhost"),  # Use environment variable for host
-            #     user=os.environ.get("MYSQL_USER", "codebind"),  # Use environment variable for user
-            #     password=os.environ.get("MYSQL_PASSWORD"),  # Use environment variable for password
-            #     database=os.environ.get("MYSQL_DATABASE", "ficticiousblogs")
-            # )
+    def get_post_by_id(post_id):        
+        try:            
             connection = get_db_connection()
             cursor = connection.cursor()
             
@@ -286,11 +188,7 @@ def create_app():
             # Fetch the result
             post = cursor.fetchone()
             return post
-
-        # except sqlite3.Error as e:
-        #     print("Error while connecting to SQLite:", e)
-        #     return None
-        
+                
         except Exception as e:
             print("Error while interacting with PostgreSQL:", e)
             return None
@@ -327,7 +225,7 @@ def create_app():
                 
             # Proceed with registration if email is not registered
             
-            # Insert user into SQLite
+            # Insert user into Postgresql
             insert_user(email, password)
             flash("Registration successful. Please log in.", "success")
             return redirect(url_for("login"))
@@ -372,17 +270,13 @@ def create_app():
                 # Otherwise, treat it as a submission
                 title = request.form.get("title")
                 content = request.form.get("content")
-                # Insert entry into SQLite
+                # Insert entry into Postgresql
                 insert_entry(title, content, user_email)
                 flash("BLog entry submitted successfully", "success")
                 
         # Fetch all entries for display
         entries = fetch_entries()
-        return render_template("index.html", entries=entries, user_email=user_email)
-        
-    #   # Fetch and display entries on GET request
-    #   entries = fetch_entries()
-    #   return render_template("index.html", entries=entries, user_email=user_email) 
+        return render_template("index.html", entries=entries, user_email=user_email)        
 
     @app.route("/logout", methods=["POST"])
     def logout():
