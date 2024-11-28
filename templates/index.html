@@ -89,7 +89,7 @@
           <button
             type="button"
             class="generate-button"
-            onclick="document.getElementById('generate_content').value='true'; this.form.submit();"
+            onclick="startGeneratingContent(this)"
           >
             Generate Content
           </button>
@@ -102,6 +102,30 @@
             Submit
           </button>
         </form>
+        <script>
+          let dotsInterval;
+          function startGeneratingContent(button) {
+            // Set the hidden input value
+            document.getElementById("generate_content").value = "true";
+
+            // Get the content textarea
+            const contentTextarea = document.getElementById("content");
+
+            // Initialize the message and dots animation
+            let dots = "";
+            contentTextarea.value = "Generating content";
+            dotsInterval = setInterval(() => {
+              dots = dots.length < 3 ? dots + "." : "";
+              contentTextarea.value = `Generating content${dots}`;
+            }, 400); // Update dots every 500ms
+
+            // Submit the form
+            setTimeout(() => {
+              clearInterval(dotsInterval); // Stop animation before submitting
+              button.form.submit();
+            }, 5000); // Optional: Add a delay before form submission
+          }
+        </script>
       </section>
       <section class="recent-posts">
         <h1>Recent Posts</h1>
