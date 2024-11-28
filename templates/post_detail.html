@@ -63,7 +63,7 @@
         <h3>Post Title: {{ title }}</h3>
         <h3>Author: {{ email }}</h3>
         <h3>Posted Date: {{ date }}</h3>
-        <p id="post-content">{{ content }}</p>
+        <div id="post-content">{{ content|safe }}</div>
       </div>
       <button
         type="edit"

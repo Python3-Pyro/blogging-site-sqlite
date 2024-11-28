@@ -51,14 +51,17 @@ def create_app():
                     date TIMESTAMP DEFAULT NOW(),
                     email TEXT
                 )
-                """)            
+                """)
+            
+            # Format content into HTML paragraphs
+            formatted_content = ''.join(f"<p>{para.strip()}</p>" for para in content.split('\n') if para.strip())       
             
             # SQL query to insert data for Postgresql
             sql_insert_query = """
             INSERT INTO entries (title, content, email)
             VALUES (%s, %s, %s)
-            """        
-            entry_data = (title, content, email)
+            """       
+            entry_data = (title, formatted_content, email)
 
             # Execute the query
             cursor.execute(sql_insert_query, entry_data)
